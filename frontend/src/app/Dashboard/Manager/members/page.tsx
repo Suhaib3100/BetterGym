@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Users, DollarSign, Clock } from "lucide-react";
-import { AddMemberForm } from "@/components/members/AddMemberForm";
+import { Plus, Users, DollarSign } from "lucide-react";
 import { MembersList } from "@/components/members/MembersList";
+import Link from "next/link";
 
 interface MemberStats {
   total: number;
@@ -14,7 +14,6 @@ interface MemberStats {
 }
 
 export default function MembersPage() {
-  const [showAddForm, setShowAddForm] = useState(false);
   const [stats, setStats] = useState<MemberStats>({
     total: 0,
     active: 0,
@@ -44,18 +43,15 @@ export default function MembersPage() {
     }
   }
 
-  const handleMemberAdded = () => {
-    setShowAddForm(false);
-    setRefreshTrigger(prev => prev + 1);
-  };
-
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Members</h1>
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="mr-2 h-4 w-4" />
-          {showAddForm ? "Cancel" : "Add Member"}
+        <Button asChild>
+          <Link href="/Dashboard/Manager/members/add">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Member
+          </Link>
         </Button>
       </div>
 
@@ -93,13 +89,6 @@ export default function MembersPage() {
           </CardContent>
         </Card>
       </div>
-
-      {showAddForm && (
-        <div className="rounded-lg border p-6">
-          <h2 className="mb-4 text-xl font-semibold">Add New Member</h2>
-          <AddMemberForm onSuccess={handleMemberAdded} />
-        </div>
-      )}
 
       <div className="rounded-lg border p-6">
         <h2 className="mb-4 text-xl font-semibold">All Members</h2>

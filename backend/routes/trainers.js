@@ -33,4 +33,40 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+// Create a new trainer
+router.post('/', async (req, res, next) => {
+  const { name, email, phone, specialization, experience_years, status } = req.body;
+
+  try {
+    // Check if email already exists
+    const [existingTrainers] = await pool.query(
+      'SELECT id FROM trainers WHERE email = ?',
+      [email]
+    );
+
+    if (existingTrainers.length > 0) {
+      const error = new Error('Email already exists');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Insert new trainer
+    const [result] = await pool.query(
+      'INSERT INTO trainers (name, email, phone, specialization, experience_years, status) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, email, phone, specialization, experience_years, status]
+    );
+
+    // Get the created trainer
+    const [newTrainer] = await pool.query(
+      'SELECT * FROM trainers WHERE id = ?',
+      [result.insertId]
+    );
+
+    res.status(201).json(newTrainer[0]);
+  } catch (error) {
+    console.error('Error creating trainer:', error);
+    next(error);
+  }
+});
+
 module.exports = router; 
